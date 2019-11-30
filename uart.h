@@ -8,6 +8,7 @@ void outputdata(uint8_t data);
 
 void startTransmission(void);
 void endTransmission(void);
+void AddToTxBuffer(uint8_t data);
 
 extern void byteRecived(uint8_t data);
 extern void errorByteRecived(void);

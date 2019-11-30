@@ -73,3 +73,22 @@ void byteRecived(uint8_t byte){
 }
 
 
+void sendMessage(SimpleMessage *msg){
+	AddToTxBuffer(msg->header.startChar);
+	AddToTxBuffer(msg->header.length & 0xff);
+	AddToTxBuffer((msg->header.length>>8) & 0xff);
+	AddToTxBuffer(msg->header.messageType);
+	int bodyLength = msg->header.length - 6;
+	for(int i=0;i<bodyLength;i++){
+		AddToTxBuffer(msg->body[i]);		
+	}
+	
+	AddToTxBuffer(0);
+	AddToTxBuffer(0);
+	
+	AddToTxBuffer(msg->header.startChar);
+	
+	Start_SendBuffer();
+	
+}
+

@@ -35,5 +35,8 @@ typedef struct{
 void errorByteRecived(void);
 void restartFrameReading(void);
 void byteRecived(uint8_t byte);
+void sendMessage(SimpleMessage *msg);
 extern void processFrame(SimpleMessage *frame);
+extern void AddToTxBuffer(uint8_t data);
+extern void Start_SendBuffer(void);
 #endif 

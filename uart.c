@@ -1,11 +1,13 @@
 
 #include "platform.h"
 #include "uart.h"
+#include "Queue.h"
 
 __irq void uart0ISR(void);
 void enableUART0Interrupt(void);
-
-
+Queue tx_buffer;
+uint8_t Tx_Done = 1;
+uint8_t dataTx;
 //#include "simpleProtocol.h"
 /*PLCK is 15MHZ 
 	baude rate 9600
@@ -35,11 +37,14 @@ void intUART0(){
 }
 
 void startTransmission(){
+	Tx_Done = 0; //restart transmission
+	U0IER |= 2;////enable tx interrupt,	
 	U0TER |= (1<<7); // enable the transmitter 
-	U0IER |= 2;////enable tx buffer,	
+	
 }
 
 void endTransmission(){
+	Tx_Done = 1; //restart transmission
 	U0IER &= ~2;//
 	U0TER &= ~(1<<7); // enable the transmitter 
 }
@@ -75,17 +80,27 @@ __irq void uart0ISR(){
 				errorByteRecived();
 			}else{
 				data = U0RBR;
-				outputdata(data);
-				while((U0LSR&0x40)==0);
-				//byteRecived(data);
+				//outputdata(data);
+				//while((U0LSR&0x40)==0);
+				byteRecived(data);
 			}
 			break;
 		/*case 6://Character Time-out Indicator (CTI).
 			break;*/
 		case 1: //THRE Interrupt
-			//U0THR = 5;
-				//outputdata('k');
-		    endTransmission();
+		    if(queue_isEmpty(&tx_buffer)!=1)
+        	{
+            
+            queue_dequeue(&tx_buffer,&dataTx);
+        		U0THR = dataTx;
+
+        	}
+        	else
+        	{        	
+						endTransmission();
+        	}
+		
+		    
 			break;		
 	}
 	
@@ -95,10 +110,29 @@ __irq void uart0ISR(){
 
 
 void outputdata(uint8_t data)
-{
-  //if((U0LSR & (1<<5)) != 0) // empty tx buffer 
-  {
-		startTransmission();
+{  
+
 		U0THR = data;
-	}
+	
+}
+
+
+void AddToTxBuffer(uint8_t data)
+{
+	queue_enqueue(&tx_buffer,&data);
+}
+
+void Start_SendBuffer()
+{
+    if(Tx_Done == 1)
+    {        		
+       
+			 startTransmission();
+       if(queue_dequeue(&tx_buffer,&dataTx)!=-1)
+					U0THR = dataTx;      
+    }
+    else
+    {
+      //do noting 
+    }   
 }

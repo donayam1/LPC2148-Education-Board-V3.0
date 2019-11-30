@@ -6,16 +6,29 @@
 #include "main.h"
 
 
+void sendTestMessage(){
+	SimpleMessage msg;
+	msg.header.startChar = '$';
+	msg.header.messageType = 10;
+	msg.header.length = 8;
+	msg.body[0] = 'A';
+  msg.body[1] = 'B';
+	msg.crc = 0;
+	sendMessage(&msg);
+}
+
 int main(){
 	initPll();
 	initLeds();
 	intUART0();
 	
-	startTransmission();
-	outputdata('c');
+	//startTransmission();
+	//outputdata('c');
 	//outputdata('B');
 	//outputdata('c');
 	//endTransmission();
+	sendTestMessage();
+	
 	while(1){
 		TurnOffLed1;
 		TurnOnLed2;
