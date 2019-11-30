@@ -14,6 +14,7 @@
 #define LED2OFF 8
 #define GET_ADC_READING 20
 #define ADC_RESULT 21
+#define SEND_TEST_MESSAGE 26
 
 
 typedef struct{

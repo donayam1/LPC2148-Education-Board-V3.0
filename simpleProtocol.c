@@ -37,14 +37,17 @@ void byteRecived(uint8_t byte){
 					  lengthCount = 1;
 				 }else if(lengthCount == 1){
 						message.header.length |= byte<<8;
-					 bodyLength = message.header.length -6; //subtract start,stop,2length,2crc
+					 bodyLength = message.header.length -7; //subtract start,stop,2length,2crc
 					 state = 2;
 					 
 				 }
 				break;			
 		  case 2: //reciving message type;
 				message.header.messageType = byte;
-			  state=3;
+				if(bodyLength>0)
+					state=3;
+				else
+					state =4;
 			  break;		
 			case 3: // receving body
 				message.body[bodyCount] = byte;
@@ -78,7 +81,7 @@ void sendMessage(SimpleMessage *msg){
 	AddToTxBuffer(msg->header.length & 0xff);
 	AddToTxBuffer((msg->header.length>>8) & 0xff);
 	AddToTxBuffer(msg->header.messageType);
-	int bodyLength = msg->header.length - 6;
+	int bodyLength = msg->header.length - 7;
 	for(int i=0;i<bodyLength;i++){
 		AddToTxBuffer(msg->body[i]);		
 	}
