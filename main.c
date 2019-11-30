@@ -11,8 +11,11 @@ int main(){
 	initLeds();
 	intUART0();
 	
-	//startTransmission();
-	outputdata('A');
+	startTransmission();
+	outputdata('c');
+	//outputdata('B');
+	//outputdata('c');
+	//endTransmission();
 	while(1){
 		TurnOffLed1;
 		TurnOnLed2;

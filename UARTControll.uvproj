@@ -408,7 +408,7 @@
             <TextAddressRange>0x00000000</TextAddressRange>
             <DataAddressRange>0x40000000</DataAddressRange>
             <pXoBase></pXoBase>
-            <ScatterFile></ScatterFile>
+            <ScatterFile>.\Objects\UARTControll.sct</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
             <Misc></Misc>

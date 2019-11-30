@@ -7,12 +7,11 @@ void enableUART0Interrupt(void);
 
 
 //#include "simpleProtocol.h"
-/*PLCK is 60MHZ 
-	baude rate 38400
-	H=2
-	L=17
-	M=1
-	D=1, error = 0.003
+/*PLCK is 15MHZ 
+	baude rate 9600
+	16xH+L=90s	
+	M=12
+	D=1, 
 */
 void intUART0(){
 	PINSEL0 |= (0x1<<2) | 1; //Set the pins to UART, P0.0 T0D, P0.1 R0D
@@ -20,16 +19,16 @@ void intUART0(){
  //1characters raises interrupt,Enable FIFO bufers	
 	U0FCR = (0<<6)|0x1;
 	//odd parity ,8 bit send and recive
-	U0LCR |= (1<<3)|3;  //
+	U0LCR = (1<<3)|3;  //
 	
 	//bit 7 is DLAB , set to 9600 with 0.0064% error
 	U0LCR |= (1<<7); // enable the DLAB bit then set the divisors 
-	U0DLL = 17;//93;
-	U0DLM = 0x2;
-	U0FDR =  (1<<4)| 1;// MULVAL = 1, DIVADDVAL = 1
+	U0DLL = 90;//93;
+	U0DLM = 0;
+	U0FDR =  (12<<4)| 1;// MULVAL = 1, DIVADDVAL = 1
 	U0LCR &=~(1<<7); // clear the DLAB bit 
 	//
-	U0IER |= 1;//1//RECIVE interrupt is enabled,
+	U0IER |= 3;//1//RECIVE interrupt is enabled,
 	U0TER &= !(1<<7); // disable the transmitter 
 	
 	enableUART0Interrupt();
@@ -37,9 +36,9 @@ void intUART0(){
 
 void startTransmission(){
 	U0TER |= (1<<7); // enable the transmitter 
-	U0IER |= 2;////enable tx buffer,
-	
+	U0IER |= 2;////enable tx buffer,	
 }
+
 void endTransmission(){
 	U0IER &= ~2;//
 	U0TER &= ~(1<<7); // enable the transmitter 
@@ -77,23 +76,29 @@ __irq void uart0ISR(){
 			}else{
 				data = U0RBR;
 				outputdata(data);
-				byteRecived(data);
+				while((U0LSR&0x40)==0);
+				//byteRecived(data);
 			}
 			break;
 		/*case 6://Character Time-out Indicator (CTI).
 			break;*/
 		case 1: //THRE Interrupt
 			//U0THR = 5;
+				//outputdata('k');
+		    endTransmission();
 			break;		
 	}
+	
+	VICVectAddr =0;
 }
 
 
 
 void outputdata(uint8_t data)
 {
-  if((U0LSR & (1<<5)) != 0) // empty tx buffer 
+  //if((U0LSR & (1<<5)) != 0) // empty tx buffer 
   {
+		startTransmission();
 		U0THR = data;
 	}
 }

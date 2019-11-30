@@ -20,6 +20,6 @@ void initPll(){
 	PLL0FEED = 0xAA;
 	PLL0FEED = 0x55;
 	
-	VPBDIV = 01;//same 
+	VPBDIV = 00;//1/4 01;//same 
 	
 }
