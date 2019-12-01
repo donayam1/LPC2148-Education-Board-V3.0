@@ -55,7 +55,7 @@ void enableUART0Interrupt(void)
 	VICIntSelect &= ~(1<<6); //IRQ
 	//VICDefVectAddr =(unsigned int)DefInterrupt; //
 	VICVectCntl1 =  (1<<5)|6;//IRQslot_en,for interrupt 6, UART0
-	VICIntEnable = (1<<6);//UART0 interrupt 
+	VICIntEnable |= (1<<6);//UART0 interrupt 
 }
 
 	uint8_t data;

@@ -1,9 +1,11 @@
+#include <stdint.h>
 #include "platform.h"
 #include "pll.h"
 #include "leds.h"
 #include "uart.h"
 #include "simpleProtocol.h"
 #include "main.h"
+#include "adc.h"
 
 void sendTestMessage(){
 	SimpleMessage msg;
@@ -15,13 +17,23 @@ void sendTestMessage(){
 	msg.crc = 0;
 	sendMessage(&msg);
 }
-
+void sendAdcReading(){
+	SimpleMessage msg;
+	msg.header.startChar = '$';
+	msg.header.messageType = ADC_RESULT;
+	msg.header.length = 9;
+	uint16_t res = getAdc0Res();
+	msg.body[0] = res&0xff;
+  msg.body[1] = (res>>8) & 0x3;
+	msg.crc = 0;
+	sendMessage(&msg);
+}
 
 int main(){
 	initPll();
 	initLeds();
 	intUART0();
-	
+	initAdc();
 	//startTransmission();
 	//outputdata('c');
 	//outputdata('B');
@@ -57,7 +69,7 @@ void processFrame(SimpleMessage *frame){
 			TurnOffLed2;
 			break;
 		case GET_ADC_READING:
-			
+			sendAdcReading();
 			break;
 		case SEND_TEST_MESSAGE:
 			sendTestMessage();
