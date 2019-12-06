@@ -15,7 +15,8 @@
 #define GET_ADC_READING 20
 #define ADC_RESULT 21
 #define SEND_TEST_MESSAGE 26
-
+#define GET_TEMPRATURE 30
+#define GET_TEMP_RESULT 31
 
 typedef struct{
 	uint8_t startChar; //start character

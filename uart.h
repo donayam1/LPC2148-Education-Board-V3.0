@@ -4,7 +4,6 @@
 #include <stdint.h>
 
 void intUART0(void );
-void outputdata(uint8_t data);
 
 void startTransmission(void);
 void endTransmission(void);

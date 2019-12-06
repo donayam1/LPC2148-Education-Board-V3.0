@@ -8,7 +8,8 @@ void enableUART0Interrupt(void);
 Queue tx_buffer;
 uint8_t Tx_Done = 1;
 uint8_t dataTx;
-//#include "simpleProtocol.h"
+uint8_t dataRx;
+
 /*PLCK is 15MHZ 
 	baude rate 9600
 	16xH+L=90s	
@@ -23,14 +24,14 @@ void intUART0(){
 	//odd parity ,8 bit send and recive
 	U0LCR = (1<<3)|3;  //
 	
-	//bit 7 is DLAB , set to 9600 with 0.0064% error
+	//bit 7 is DLAB , set to 9600 
 	U0LCR |= (1<<7); // enable the DLAB bit then set the divisors 
 	U0DLL = 90;//93;
 	U0DLM = 0;
-	U0FDR =  (12<<4)| 1;// MULVAL = 1, DIVADDVAL = 1
+	U0FDR =  (12<<4)| 1;// MULVAL = 12, DIVADDVAL = 1
 	U0LCR &=~(1<<7); // clear the DLAB bit 
 	//
-	U0IER |= 3;//1//RECIVE interrupt is enabled,
+	U0IER |= 1;//1//RECIVE interrupt is enabled,
 	U0TER &= !(1<<7); // disable the transmitter 
 	
 	enableUART0Interrupt();
@@ -45,8 +46,8 @@ void startTransmission(){
 
 void endTransmission(){
 	Tx_Done = 1; //restart transmission
-	U0IER &= ~2;//
-	U0TER &= ~(1<<7); // enable the transmitter 
+	U0IER &= ~2; //disable tx interrupt 
+	U0TER &= ~(1<<7); // disable the transmitter 
 }
 
 void enableUART0Interrupt(void)
@@ -58,8 +59,8 @@ void enableUART0Interrupt(void)
 	VICIntEnable |= (1<<6);//UART0 interrupt 
 }
 
-	uint8_t data;
-int reciveBeffer[4];
+	
+
 __irq void uart0ISR(){
 	
 	int y = U0IIR;
@@ -79,10 +80,10 @@ __irq void uart0ISR(){
 			{
 				errorByteRecived();
 			}else{
-				data = U0RBR;
+				dataRx = U0RBR;
 				//outputdata(data);
 				//while((U0LSR&0x40)==0);
-				byteRecived(data);
+				byteRecived(dataRx);
 			}
 			break;
 		/*case 6://Character Time-out Indicator (CTI).
@@ -109,14 +110,6 @@ __irq void uart0ISR(){
 
 
 
-void outputdata(uint8_t data)
-{  
-
-		U0THR = data;
-	
-}
-
-
 void AddToTxBuffer(uint8_t data)
 {
 	queue_enqueue(&tx_buffer,&data);
@@ -133,6 +126,6 @@ void Start_SendBuffer()
     }
     else
     {
-      //do noting 
+      //do nothing 
     }   
 }

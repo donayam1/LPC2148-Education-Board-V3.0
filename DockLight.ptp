@@ -1,0 +1,59 @@
+VERSION
+8
+
+COMMSETTINGS
+0
+COM13
+COM2
+9600
+3
+63
+4
+0
+0
+
+COMMDISPLAY
+0
+
+SEND
+0
+GetTestMessage
+24 07 00 1A 00 00 24
+0
+5
+
+SEND
+1
+Led1On
+24 07 00 05 00 00 24
+0
+5
+
+SEND
+2
+Led1Off
+24 07 00 06 00 00 24
+0
+5
+
+SEND
+3
+Led2On
+24 07 00 07 00 00 24
+0
+5
+
+SEND
+4
+Led2Off
+24 07 00 08 00 00 24
+0
+5
+
+SEND
+5
+GetAdcReading
+24 07 00 14 00 00 24
+0
+5
+

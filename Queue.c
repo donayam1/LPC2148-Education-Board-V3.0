@@ -4,15 +4,14 @@
 
 
 
- int queue_reinit(Queue *queue)
+int queue_reinit(Queue *queue)
 {
   queue->tail = 0;
   queue->head = 0;
   return 1;
 }
- int queue_enqueue(Queue *queue, const uint8_t *data)
-{
-  
+int queue_enqueue(Queue *queue, const uint8_t *data)
+{  
   if(queue_isFull(queue) == 1)
   {
     return -1;
@@ -29,7 +28,7 @@
   }
 }
 
- int queue_dequeue(Queue *queue, uint8_t *data)
+int queue_dequeue(Queue *queue, uint8_t *data)
 {
   if(queue_isEmpty(queue) == 1)
   {
@@ -46,7 +45,7 @@
     return 1;
   }
 }
- int queue_isFull(const Queue *queue)
+int queue_isFull(const Queue *queue)
 {
    if(queue->head < queue->tail)
    {
@@ -65,7 +64,7 @@
    } 
 }
 
- int queue_isEmpty(const Queue *queue)
+int queue_isEmpty(const Queue *queue)
 {
    if(queue->head == queue->tail)
      return 1;

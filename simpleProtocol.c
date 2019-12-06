@@ -1,15 +1,17 @@
 #include "simpleProtocol.h"
 #include <stdint.h>
-
+//simple frame format 
+// $ Ll LH MT BBBBB Cl CH $
+//
+//
 
 int state=0;
 int lengthCount=0;
 int bodyLength = 0;
 int bodyCount = 0;
 int crcCount=0;
-void errorByteRecived(void){
-	restartFrameReading();
-}
+SimpleMessage message;
+
 void restartFrameReading(){
 	state = 0;
 	lengthCount = 0;
@@ -17,9 +19,9 @@ void restartFrameReading(){
 	bodyCount =0;
 	crcCount = 0;
 }
-
-SimpleMessage message;
-
+void errorByteRecived(){
+	restartFrameReading();
+}
 
 void byteRecived(uint8_t byte){
 		switch(state)
@@ -42,14 +44,14 @@ void byteRecived(uint8_t byte){
 					 
 				 }
 				break;			
-		  case 2: //reciving message type;
+		  case 2: //receiving message type;
 				message.header.messageType = byte;
 				if(bodyLength>0)
 					state=3;
 				else
 					state =4;
 			  break;		
-			case 3: // receving body
+			case 3: // receiving body
 				message.body[bodyCount] = byte;
 				bodyCount ++;
 				if(bodyCount == bodyLength)
@@ -65,7 +67,7 @@ void byteRecived(uint8_t byte){
 					 //TODO do crc check 
 				 }
 				break;
-		  case 5:
+		  case 5: //receiving end character 
 				restartFrameReading();
 				if(byte == '$')
 				 {											
@@ -91,7 +93,5 @@ void sendMessage(SimpleMessage *msg){
 	
 	AddToTxBuffer(msg->header.startChar);
 	
-	Start_SendBuffer();
-	
+	Start_SendBuffer();	
 }
-

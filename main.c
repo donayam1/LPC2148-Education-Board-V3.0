@@ -6,6 +6,9 @@
 #include "simpleProtocol.h"
 #include "main.h"
 #include "adc.h"
+#include "I2C0.h"
+#include "LM75.h"
+#include "TC47.h"
 
 void sendTestMessage(){
 	SimpleMessage msg;
@@ -28,18 +31,32 @@ void sendAdcReading(){
 	msg.crc = 0;
 	sendMessage(&msg);
 }
+void sendTempratureReading(){
+	SimpleMessage msg;
+	msg.header.startChar = '$';
+	msg.header.messageType = GET_TEMP_RESULT;
+	msg.header.length = 9;
+	uint16_t res = getCurrentTemprature();
+	msg.body[0] = res&0xff;
+  msg.body[1] = (res>>8) & 0x3;
+	msg.crc = 0;
+	sendMessage(&msg);
+}
 
 int main(){
 	initPll();
 	initLeds();
 	intUART0();
 	initAdc();
+	initI2C0Interface();
 	//startTransmission();
 	//outputdata('c');
 	//outputdata('B');
 	//outputdata('c');
 	//endTransmission();
 	//sendTestMessage();
+	readCurrentTemprature();
+	//readCurrentTemprature2();
 	
 	while(1){
 		/*TurnOffLed1;
@@ -73,6 +90,10 @@ void processFrame(SimpleMessage *frame){
 			break;
 		case SEND_TEST_MESSAGE:
 			sendTestMessage();
+			break;
+		case GET_TEMPRATURE:
+			readCurrentTemprature();
+			sendTempratureReading();
 			break;
 		//case turn on led1
 		//case turn off led1

@@ -14,6 +14,7 @@ void initAdc(){
 	PINSEL1 |= (1<<24);
 	
 	AD0INTEN = 2;		
+	
 	VICIntEnable |= (1<<18);
 	VICIntSelect &= ~(1<<18); //IRQ
 	VICVectCntl2 =  (1<<5)|18;
@@ -21,7 +22,9 @@ void initAdc(){
 }
 
 __irq void ADCDoneISR(){		
-	  int x= AD0DR1;//dummy read 
+	#ifdef USE_BOARD
+	  int x= AD0DR1;//dummy read to clear interrupt flags
+	#endif 
 		adc0Res = (AD0GDR>>6)&(0x03ff);
 	  VICVectAddr = 0;
 }
