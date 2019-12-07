@@ -76,13 +76,13 @@ __irq void i2c0ISR(){
 	switch(i2cStatus)
 	{
 		case 0x08: //start condition has been transmitted	 
-			sendLogMessage((unsigned char *)"\nCase 0x80",11);
+			sendLogMessage((unsigned char *)"\nCase 0x08",11);
 			if(currReq->sendReadAddress == 0)			{ //no need to send read address pointer, so set it to read mode
 				I2C0DAT = (currReq->slaveAddress) | 1;			
 				//clearStartCondition();
 			}
 			else{ //read address pointer needs to be sent, so set it to write mode 
-				I2C0DAT = (currReq->slaveAddress) | 0; 
+				I2C0DAT = (currReq->slaveAddress) | 1; 
 			}
 			
 			clearStartCondition();
@@ -112,7 +112,7 @@ __irq void i2c0ISR(){
 		break;
 		case 0x28: //Data byte in I2DATA tx & ACK recived
 			//case 0x30: //Data byte in I2DATA tx & NoACK recived
-		sendLogMessage((unsigned char *)"\nCase 0x28",11);
+		 sendLogMessage((unsigned char *)"\nCase 0x28",11);
 			if(sentAddressByteCounter < currReq->readAddressLength){
 				I2C0DAT= (currReq->readRegAddress) &0xff;
 				currReq->readRegAddress >>= 8;
@@ -123,6 +123,9 @@ __irq void i2c0ISR(){
 			break;
 		case 0x30: //Data byte in I2DATA tx & NoACK recived
 			sendLogMessage((unsigned char *)"\nCase 0x30",11);
+		  //currReq->readingFinishedCallback();
+			//disableI2C();
+			//currReq = 0;
 		break;
 		case 0x38: //Arbitration lost 
 			
@@ -131,7 +134,7 @@ __irq void i2c0ISR(){
 		
 		case 0x40: //SLA+R tx & ACK rx
 		//case 0x48: //SLA+R tx & NoACK rx,TODO remove this block
-	sendLogMessage((unsigned char *)"\nCase 0x40",11);
+	    sendLogMessage((unsigned char *)"\nCase 0x40",11);
 			if(currReq->readDataLength>1){
 					enableSendingACK();
 				}else{
@@ -156,9 +159,10 @@ __irq void i2c0ISR(){
 			recivedDataCounter++;
 		  *currReq->readBuff++ = I2C0DAT;
 			//if(recivedDataCounter == currReq->readAddressLength){ // final byte recived 
-				generateStopCondition();
-				currReq->readingFinishedCallback();
-			  disableI2C();
+			generateStopCondition();
+			currReq->readingFinishedCallback();
+			disableI2C();
+			currReq = 0;	
 			//}
 			break;
 		default:

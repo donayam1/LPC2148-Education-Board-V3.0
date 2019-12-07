@@ -97,13 +97,17 @@ void sendMessage(SimpleMessage *msg){
 	
 	Start_SendBuffer();	
 }
+
+#define debug
 void sendLogMessage(uint8_t *message,int length)
 {
-	SimpleMessage msg;
-	msg.header.startChar = '$';
-	msg.header.messageType = LOG;
-	msg.header.length = length+7;
-	msg.body = message;
-	msg.crc = 0;
-	sendMessage(&msg);
+	#ifdef debug
+		SimpleMessage msg;
+		msg.header.startChar = '$';
+		msg.header.messageType = LOG;
+		msg.header.length = length+7;
+		msg.body = message;
+		msg.crc = 0;
+		sendMessage(&msg);
+	#endif 
 }
