@@ -11,8 +11,10 @@ int bodyLength = 0;
 int bodyCount = 0;
 int crcCount=0;
 SimpleMessage message;
+uint8_t reciveBuffer[Max_Buff_Length];
 
 void restartFrameReading(){
+	message.body = reciveBuffer;
 	state = 0;
 	lengthCount = 0;
 	bodyLength = 0;
@@ -94,4 +96,14 @@ void sendMessage(SimpleMessage *msg){
 	AddToTxBuffer(msg->header.startChar);
 	
 	Start_SendBuffer();	
+}
+void sendLogMessage(uint8_t *message,int length)
+{
+	SimpleMessage msg;
+	msg.header.startChar = '$';
+	msg.header.messageType = LOG;
+	msg.header.length = length+7;
+	msg.body = message;
+	msg.crc = 0;
+	sendMessage(&msg);
 }

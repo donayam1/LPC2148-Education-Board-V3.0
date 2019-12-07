@@ -2,8 +2,9 @@
 #include "platform.h"
 #include "LM75.h"
 #include "I2C0.h"
+#include "simpleProtocol.h"
 
-uint16_t currentTemprature = 0;
+uint16_t currentTemprature = 0x15;
 uint8_t tempratureBuffer[2];
 uint8_t isReadingTemp=0;
 
@@ -17,7 +18,7 @@ void readCurrentTemprature(){
 	if(isReadingTemp == 0){
 		I2CReadRequest req;
 	
-		req.readBuff = tempratureBuffer;
+		req.readBuff = &tempratureBuffer[0];
 	  req.readDataLength = 2;
 	  req.readingFinishedCallback = tempratureReadFinished;
 	  
@@ -27,7 +28,8 @@ void readCurrentTemprature(){
 		req.readAddressLength = 0;
 
 		req.slaveAddress = TEMPRATURE_SENSOR_ADDRESS;
-		i2cRead(&req);
+	  enableI2C();
+		i2cRead(&req);		
 		isReadingTemp = 1;
 	 }
 }
@@ -35,4 +37,5 @@ void readCurrentTemprature(){
 void tempratureReadFinished(){
 	currentTemprature = tempratureBuffer[0]<<8 | tempratureBuffer[1];
 	isReadingTemp = 0;
+	sendLogMessage((unsigned char *)"\nReading Done",14);
 }

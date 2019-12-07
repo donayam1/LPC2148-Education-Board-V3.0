@@ -15,8 +15,9 @@ void sendTestMessage(){
 	msg.header.startChar = '$';
 	msg.header.messageType = 10;
 	msg.header.length = 9;
-	msg.body[0] = 'A';
-  msg.body[1] = 'B';
+	uint8_t message[]={'A','B'};
+	msg.body = message;
+
 	msg.crc = 0;
 	sendMessage(&msg);
 }
@@ -26,8 +27,9 @@ void sendAdcReading(){
 	msg.header.messageType = ADC_RESULT;
 	msg.header.length = 9;
 	uint16_t res = getAdc0Res();
-	msg.body[0] = res&0xff;
-  msg.body[1] = (res>>8) & 0x3;
+	uint8_t resBuff[]={res&0xff,(res>>8) & 0x3};
+	msg.body = resBuff;
+  //msg.body[1] = (res>>8) & 0x3;
 	msg.crc = 0;
 	sendMessage(&msg);
 }
@@ -37,26 +39,24 @@ void sendTempratureReading(){
 	msg.header.messageType = GET_TEMP_RESULT;
 	msg.header.length = 9;
 	uint16_t res = getCurrentTemprature();
-	msg.body[0] = res&0xff;
-  msg.body[1] = (res>>8) & 0x3;
+	uint8_t resBuff[]={res&0xff,(res>>8) & 0x3};
+	msg.body = resBuff;
+	//msg.body[0] = res&0xff;
+  //msg.body[1] = (res>>8) & 0x3;
 	msg.crc = 0;
 	sendMessage(&msg);
 }
 
 int main(){
+	
 	initPll();
 	initLeds();
 	intUART0();
 	initAdc();
 	initI2C0Interface();
-	//startTransmission();
-	//outputdata('c');
-	//outputdata('B');
-	//outputdata('c');
-	//endTransmission();
-	//sendTestMessage();
+	
+	sendLogMessage((unsigned char *)"\nREST",6);
 	readCurrentTemprature();
-	//readCurrentTemprature2();
 	
 	while(1){
 		/*TurnOffLed1;

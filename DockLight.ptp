@@ -3,7 +3,7 @@ VERSION
 
 COMMSETTINGS
 0
-COM13
+COM14
 COM2
 9600
 3
@@ -54,6 +54,13 @@ SEND
 5
 GetAdcReading
 24 07 00 14 00 00 24
+0
+5
+
+SEND
+6
+GetTemprature
+24 07 00 1E 00 00 24
 0
 5
 

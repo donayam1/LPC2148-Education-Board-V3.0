@@ -18,7 +18,9 @@ typedef struct {
 	
 }I2CReadRequest;
 
-
+extern uint16_t currentTemprature;
+void disableI2C(void);
+void enableI2C(void);
 void 	initI2C0Interface(void);
 void i2cRead(I2CReadRequest *req);
 void generateStartCondition(void);

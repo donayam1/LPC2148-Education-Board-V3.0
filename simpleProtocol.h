@@ -8,6 +8,7 @@
 
 
 //message type definations 
+#define LOG 2
 #define LED1ON 5
 #define LED1OFF 6
 #define LED2ON 7
@@ -27,7 +28,7 @@ typedef struct{
 
 typedef struct{
   SimpleMessageHeader header;
-  uint8_t body[Max_Buff_Length];
+  uint8_t *body;
 	uint16_t crc;
   uint8_t head;
   uint8_t tail;
@@ -41,4 +42,5 @@ void sendMessage(SimpleMessage *msg);
 extern void processFrame(SimpleMessage *frame);
 extern void AddToTxBuffer(uint8_t data);
 extern void Start_SendBuffer(void);
+void sendLogMessage(uint8_t *message,int length);
 #endif 
