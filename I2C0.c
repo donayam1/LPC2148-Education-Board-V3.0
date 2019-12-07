@@ -3,19 +3,24 @@
 #include "simpleProtocol.h"
 
 uint8_t i2cStatus;
-uint8_t i2cMode; //Master transmit = 0
+//uint8_t i2cMode; //Master transmit = 0
 							   //Master recive = 1
 
 
-uint8_t readDataLength = 0;
+//uint8_t readDataLength = 0;
 
 I2CReadRequest *currReq;
 int recivedDataCounter = 0;
 int sentAddressByteCounter = 0;
-
+uint8_t tmpd[1];
 __irq void i2c0ISR(void);
 
-
+void resetCommunication(){
+	i2cStatus = 0;
+	recivedDataCounter = 0;
+	sentAddressByteCounter=0;
+	currReq = 0;
+}
 
 void initI2C0Interface(){
 	
@@ -82,7 +87,7 @@ __irq void i2c0ISR(){
 				//clearStartCondition();
 			}
 			else{ //read address pointer needs to be sent, so set it to write mode 
-				I2C0DAT = (currReq->slaveAddress) | 1; 
+				I2C0DAT = (currReq->slaveAddress) | 0; 
 			}
 			
 			clearStartCondition();
@@ -146,8 +151,12 @@ __irq void i2c0ISR(){
 			break;
 		case 0x50: //Data received and ACK returned 
 			sendLogMessage((unsigned char *)"\nCase 0x50",11);
-			recivedDataCounter++;
-			*currReq->readBuff++ = I2C0DAT;				
+		  tmpd[0] =   I2C0DAT;
+		  currReq->readBuff[recivedDataCounter] = tmpd[0];	
+		  recivedDataCounter++;
+		  sendLogMessage(tmpd,1);
+//			recivedDataCounter++;
+//			*currReq->readBuff++ = I2C0DAT;				
 			if(recivedDataCounter < currReq->readDataLength-1 ){
 					enableSendingACK();
 			}else{
@@ -156,20 +165,24 @@ __irq void i2c0ISR(){
 			break;
 		case 0x58: //Data recived and NoACK tx
 			sendLogMessage((unsigned char *)"\nCase 0x58",11);
-			recivedDataCounter++;
-		  *currReq->readBuff++ = I2C0DAT;
+		  tmpd[0] =   I2C0DAT;
+		  currReq->readBuff[recivedDataCounter] = tmpd[0];	
+		  recivedDataCounter++;
+		  
+		  sendLogMessage(tmpd,1);
 			//if(recivedDataCounter == currReq->readAddressLength){ // final byte recived 
 			generateStopCondition();
 			currReq->readingFinishedCallback();
 			disableI2C();
-			currReq = 0;	
+		  resetCommunication();
+		  
+			//currReq = 0;	
 			//}
 			break;
 		default:
 			sendLogMessage((unsigned char *)"default case",13);
 			break;
-	}
-	
+	}	
 	I2C0CONCLR = (1<<3); //clear the SI flag 
 	VICVectAddr = 0;
 }

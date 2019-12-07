@@ -59,6 +59,13 @@ GetAdcReading
 
 SEND
 6
+RedTemprature
+24 07 00 20 00 00 24
+0
+5
+
+SEND
+7
 GetTemprature
 24 07 00 1E 00 00 24
 0

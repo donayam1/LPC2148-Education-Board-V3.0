@@ -17,19 +17,18 @@ uint16_t getCurrentTemprature(){
 
 void readCurrentTemprature(){
 	if(isReadingTemp == 0){
-		
+		sendLogMessage((unsigned char *)"\nREQ",4);
 	
 		req.readBuff = &tempratureBuffer[0];
 	  req.readDataLength = 2;
 	  req.readingFinishedCallback = tempratureReadFinished;
 	  
 	
-	  req.sendReadAddress = 0;
+	  req.sendReadAddress = 1;
 	  req.readRegAddress = 0;
-		req.readAddressLength = 0;
-		sendLogMessage((unsigned char *)"\nREQ",4);
-		uint8_t data[]={req.sendReadAddress,req.readRegAddress,req.readAddressLength };
-	  sendLogMessage(data,3);
+		req.readAddressLength = 2;
+		
+		
 		req.slaveAddress = TEMPRATURE_SENSOR_ADDRESS;
 	  enableI2C();
 		i2cRead(&req);		
@@ -38,7 +37,7 @@ void readCurrentTemprature(){
 }
 
 void tempratureReadFinished(){
-	currentTemprature = tempratureBuffer[0]<<8 | tempratureBuffer[1];
+	currentTemprature = (tempratureBuffer[0]<<8) | (tempratureBuffer[1]&0x80);
 	isReadingTemp = 0;
 	sendLogMessage((unsigned char *)"\nReading Done",14);
 }

@@ -91,9 +91,11 @@ void processFrame(SimpleMessage *frame){
 		case SEND_TEST_MESSAGE:
 			sendTestMessage();
 			break;
-		case GET_TEMPRATURE:
-			readCurrentTemprature();
+		case GET_TEMPRATURE:			
 			sendTempratureReading();
+			break;
+		case READ_TEMP:
+			readCurrentTemprature();
 			break;
 		//case turn on led1
 		//case turn off led1
