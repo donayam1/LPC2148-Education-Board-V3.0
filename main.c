@@ -9,6 +9,7 @@
 #include "I2C0.h"
 #include "LM75.h"
 #include "TC47.h"
+#include "spi.h"
 
 void sendTestMessage(){
 	SimpleMessage msg;
@@ -58,6 +59,10 @@ int main(){
 	sendLogMessage((unsigned char *)"\nREST",6);
 	readCurrentTemprature();
 	
+	initSPI();
+	//write_spi((uint16_t)0b1000000111111101);
+	//write_spi((uint16_t)0b1000000111111101);
+	
 	while(1){
 		/*TurnOffLed1;
 		TurnOnLed2;
@@ -96,6 +101,9 @@ void processFrame(SimpleMessage *frame){
 			break;
 		case READ_TEMP:
 			readCurrentTemprature();
+			break;
+		case WRITE_SPI:
+			write_spi((frame->body[0]<<8)|(frame->body[1]));
 			break;
 		//case turn on led1
 		//case turn off led1

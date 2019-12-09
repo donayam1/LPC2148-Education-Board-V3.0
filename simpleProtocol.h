@@ -19,6 +19,7 @@
 #define GET_TEMPRATURE 30
 #define GET_TEMP_RESULT 31
 #define READ_TEMP 32
+#define WRITE_SPI 35
 
 typedef struct{
 	uint8_t startChar; //start character
