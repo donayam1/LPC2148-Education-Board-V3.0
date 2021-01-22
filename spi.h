@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #define SSEL 15
-#define selectLedMatrix IO0DIR |= 1<<SSEL //make the slave selct output 
+#define selectLedMatrix IO0DIR |= 1<<SSEL //make the slave select output 
 												
 #define releaseLedMatrix IO0DIR &= ~(1<<SSEL)
 

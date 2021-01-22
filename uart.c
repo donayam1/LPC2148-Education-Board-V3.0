@@ -12,7 +12,8 @@ uint8_t dataRx;
 
 /*PLCK is 15MHZ 
 	baude rate 9600
-	16xH+L=90s	
+	16xH+L=90s
+	
 	M=12
 	D=1, 
 */
@@ -59,8 +60,6 @@ void enableUART0Interrupt(void)
 	VICIntEnable |= (1<<6);//UART0 interrupt 
 }
 
-	
-
 __irq void uart0ISR(){
 	
 	int y = U0IIR;
@@ -75,7 +74,7 @@ __irq void uart0ISR(){
 		/*case 3: //Receive Line Status (RLS)
 			 z = U0LSR;
 			break;*/
-		case 2:
+		case 2://data recived 
 		  if((z&(1<<7))==(1<<7))//check for any error before reading data
 			{
 				errorByteRecived();
@@ -107,9 +106,6 @@ __irq void uart0ISR(){
 	
 	VICVectAddr =0;
 }
-
-
-
 void AddToTxBuffer(uint8_t data)
 {
 	queue_enqueue(&tx_buffer,&data);

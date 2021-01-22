@@ -14,7 +14,6 @@ void tempratureReadFinished(void);
 uint16_t getCurrentTemprature(){
 		return currentTemprature;
 }
-
 void readCurrentTemprature(){
 	if(isReadingTemp == 0){
 		sendLogMessage((unsigned char *)"\nREQ",4);
@@ -35,7 +34,6 @@ void readCurrentTemprature(){
 		isReadingTemp = 1;
 	 }
 }
-
 void tempratureReadFinished(){
 	currentTemprature = (tempratureBuffer[0]<<8) | (tempratureBuffer[1]&0x80);
 	isReadingTemp = 0;
